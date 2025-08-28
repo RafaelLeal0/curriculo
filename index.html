@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <!-- Adiciona meta viewport para responsividade -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif }
+    body { min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f5f6fa; color:#2d3436 }
+    .login-container { background:#fff; padding:2.5rem; border-radius:12px; width:100%; max-width:360px; box-shadow:0 4px 24px rgba(0,0,0,.08); display:flex; flex-direction:column; gap:1rem }
+    h2 { text-align:center; font-size:1.6rem; font-weight:600; color:#1e272e }
+    p { text-align:center; font-size:.92rem; color:#636e72 }
+    input { width:100%; padding:12px; border:1px solid #dcdde1; border-radius:8px; font-size:15px; transition:border .2s, box-shadow .2s }
+    input:focus { border-color:#2575fc; box-shadow:0 0 0 3px rgba(37,117,252,.15); outline:none }
+    button { width:100%; padding:12px; border:none; border-radius:8px; background:#2575fc; color:#fff; font-size:16px; font-weight:500; cursor:pointer; transition:background .2s, transform .1s }
+    button:hover { background:#1b5edb }
+    button:active { transform:scale(.98) }
+    .error { color:#e74c3c; font-size:.9rem; text-align:center; display:none }
+
+    @media (max-width:600px) {
+      body {
+        padding:0 8px;
+      }
+      .login-container {
+        max-width:98vw;
+        padding:1.2rem;
+        margin:0 auto;
+      }
+      h2 {
+        font-size:1.2rem;
+      }
+      p {
+        font-size:.88rem;
+      }
+      input, button {
+        font-size:15px;
+        padding:10px;
+      }
+    }
+    @media (max-width:420px){
+      .login-container{
+        margin:0 0.5rem;
+        padding:0.8rem;
+      }
+      h2 {
+        font-size:1rem;
+      }
+      button {
+        font-size:14px;
+        padding:9px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Entrar</h2>
+    <p>Use seu usuário e senha para continuar</p>
+    <input type="text" id="username" placeholder="Usuário" autocomplete="username">
+    <input type="password" id="password" placeholder="Senha" autocomplete="current-password">
+    <div class="error" id="errorMsg" aria-live="polite"></div>
+    <button id="btnLogin">Entrar</button>
+  </div>
+
+  <script>
+    const errorMsg = document.getElementById("errorMsg");
+    const btnLogin = document.getElementById("btnLogin");
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = "block";
+    }
+
+    function login() {
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value;
+
+      if (user === "admin" && pass === "1234") {
+        localStorage.setItem("logado", "true");
+        window.location.href = "paginacards.html";
+      } else {
+        showError("Usuário ou senha incorretos");
+      }
+    }
+
+    btnLogin.addEventListener("click", login);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
+  </script>
+</body>
+</html>
