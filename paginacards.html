@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Currículos</title>
-  <!-- Adiciona a meta viewport para responsividade -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:"Inter", sans-serif }
@@ -177,6 +176,62 @@
         font-size:1.1rem;
       }
     }
+
+    .custom-alert-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 9998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .custom-alert-box {
+      background: #fff;
+      padding: 32px 24px 20px 24px;
+      border-radius: 14px;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.18);
+      min-width: 260px;
+      max-width: 90vw;
+      text-align: center;
+      z-index: 9999;
+      font-size: 1.08rem;
+      color: #2d3436;
+      position: relative;
+      animation: fadeInScale .2s;
+    }
+    .custom-alert-buttons {
+      margin-top: 22px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    .custom-alert-btn {
+      padding: 8px 22px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .custom-alert-btn.confirm {
+      background: #e74c3c;
+      color: #fff;
+    }
+    .custom-alert-btn.confirm:hover {
+      background: #c0392b;
+    }
+    .custom-alert-btn.cancel {
+      background: #f1f2f6;
+      color: #2d3436;
+    }
+    .custom-alert-btn.cancel:hover {
+      background: #dfe4ea;
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95);}
+      to { opacity: 1; transform: scale(1);}
+    }
   </style>
 </head>
 <body>
@@ -330,35 +385,58 @@
       window.location.href = "login.html";
     }
 
-    function logout() {
-      localStorage.removeItem("logado");
-      window.location.href = "index.html";
+    function showCustomAlert(message, onConfirm) {
+      document.querySelectorAll('.custom-alert-backdrop').forEach(e => e.remove());
+
+      const backdrop = document.createElement('div');
+      backdrop.className = 'custom-alert-backdrop';
+
+      const box = document.createElement('div');
+      box.className = 'custom-alert-box';
+      box.innerHTML = `<div>${message}</div>
+        <div class="custom-alert-buttons">
+          <button class="custom-alert-btn confirm">Sim</button>
+          <button class="custom-alert-btn cancel">Cancelar</button>
+        </div>`;
+
+      backdrop.appendChild(box);
+      document.body.appendChild(backdrop);
+
+      box.querySelector('.custom-alert-btn.confirm').onclick = function() {
+        document.body.removeChild(backdrop);
+        if (onConfirm) onConfirm();
+      };
+      box.querySelector('.custom-alert-btn.cancel').onclick = function() {
+        document.body.removeChild(backdrop);
+      };
     }
 
-    // Junta todos os cards, ordena e redistribui entre as linhas
+    function logout() {
+      showCustomAlert("Tem certeza que deseja sair?", function() {
+        localStorage.removeItem("logado");
+        window.location.href = "index.html";
+      });
+    }
+
     function sortAndDistributeCards() {
       const topContainer = document.getElementById('cards-top');
       const bottomContainer = document.getElementById('cards-bottom');
       if (!topContainer || !bottomContainer) return;
 
-      // Pega todos os cards das duas linhas
       const allCards = [
         ...Array.from(topContainer.children),
         ...Array.from(bottomContainer.children)
       ];
 
-      // Ordena todos os cards pelo nome
       allCards.sort((a, b) => {
         const nameA = a.querySelector('.card-front h3').textContent.trim().toLowerCase();
         const nameB = b.querySelector('.card-front h3').textContent.trim().toLowerCase();
         return nameA.localeCompare(nameB, 'pt-BR');
       });
 
-      // Limpa os containers
       topContainer.innerHTML = '';
       bottomContainer.innerHTML = '';
 
-      // Distribui: 4 primeiros para cima, o resto para baixo
       allCards.forEach((card, idx) => {
         if (idx < 4) {
           topContainer.appendChild(card);
